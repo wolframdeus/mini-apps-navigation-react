@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 1.0.1 (2020-07-30)
+
+
+### Bug Fixes
+
+* **init:** project initialization ([47b8d46](https://github.com/wolframdeus/mini-apps-navigation-react/commit/47b8d46294344245632f4cbbba1c3c21de09d9ff))
+
 ## [1.3.0](https://github.com/wolframdeus/mini-apps-navigation/compare/v1.2.1...v1.3.0) (2020-07-28)
 
 
