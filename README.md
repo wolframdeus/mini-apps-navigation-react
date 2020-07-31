@@ -17,12 +17,6 @@ npm i @mini-apps/navigation-react
 ``` 
 
 ## Usage
-
-> TLDR;
->
-> You can try this lib [here](https://github.com/wolframdeus/mini-apps-navigation-react).
-> Just clone repository, install dependencies and run `yarn dev`
-
 Firstly, you have to create instance of `BrowserNavigator` from 
 `@mini-apps/navigation`:
 
@@ -198,3 +192,22 @@ function Root() {
   );
 }
 ```
+
+## BrowserNavigator
+### HOCs
+Common call signature: `hoc(Component, options?: {displayName?: string})`
+
+| HOC | Property name | Property value |
+|---|---|---|
+|`withNavigatorContext`| `navigation` | Full navigator context |
+|`withNavigator`| `navigator` | Navigator |
+|`withLocation`| `location` | Location |
+|`withHistory`| `history` | History |
+
+### Hooks
+| Hook | Return value |
+|---|---|
+|`useNavigatorContext`| Full navigator context |
+|`useLocation` | Location |
+|`useHistory`| History |
+|`useNavigator`| Navigator|
