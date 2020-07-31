@@ -70,13 +70,73 @@ function Root() {
 }
 ```
 
-Then we are free to use this navigator all over our application:
+To make routing work, we could use native browser `a` tags along with
+`createSegue` from `@mini-apps/navigation` which creates appropriate links
+for navigator with something like this:
 
 ```typescript jsx
 import React from 'react';
-
 import {createSegue} from '@mini-apps/navigation';
-import {useHistory, useLocation, useNavigator} from '@mini-apps/navigation-react';
+
+function SomeBanner() {
+  return (
+    <div>
+      <a href={createSegue({view: 'promo'})}>Go to promo</a>
+      <a href={createSegue({modifiers: ['back']})}>Go back</a>
+    </div>
+  );
+}
+```
+
+When using this way of defining links, make sure you already created and
+initialized `BrowserNavigator` instance, because otherwise, nothing will
+watch for history updates and a result, not happens.
+
+Nevertheless, using default `a` tags has a big defect. Clicking these links
+will make browser splice all history items after current history element. So,
+you will lose part of history, **but `BrowserNavigator` will keep working fine
+and correct**.
+
+We recommend more comfortable and stable way of defining links. Look at this:
+
+```typescript jsx
+import React from 'react';
+import {Link} from '@mini-apps/navigation-react';
+
+function SomeBanner() {
+  return (
+    <div>
+      <Link location={{view: 'promo'}}>
+        <a>Go to promo</a>
+      </Link>
+      <Link back={true}>
+        <a>Go back</a>
+      </Link>
+    </div>
+  );
+}
+```
+
+It looks much better and has a good benefit. When `back` property  is passed 
+(or `modifiers` includes `back`), `Go back` link will not make browser cut its 
+history. Internally, `navigator.back()` is called.
+
+##### Complete example
+
+```typescript jsx
+import React, {useEffect, useMemo} from 'react';
+
+import {
+  BrowserNavigator as Navigator,
+  extractBrowserNavigatorSettings,
+} from '@mini-apps/navigation';
+import {
+  BrowserNavigator,
+  Link,
+  useHistory, 
+  useLocation, 
+  useNavigator,
+} from '@mini-apps/navigation-react';
 
 export function App() {
   const navigator = useNavigator();
@@ -98,19 +158,40 @@ export function App() {
       </div>
       <button onClick={() => navigator.back()}>Back</button>
       <button onClick={() => navigator.forward()}>Forward</button>
-      <a href={createSegue({view: 'main'})}>Link to main</a>
-      <a href={
-        createSegue({view: 'main', popup: 'delete-user', modifiers: ['skip']})}
-      >
-        Show one time popup which prompts for user delete
-      </a>
-      <a href={createSegue({view: 'onboarding', modifiers: ['replace']})}>
-        Replace current location with onboarding
-      </a>
-      <a href={createSegue({modifiers: ['back']})}>
-        Link to previous location (Back button alternative)
-      </a>
+      <Link location={{view: 'main'}}>
+         <a>Link to main</a>
+      </Link>
+      <Link location={{view: 'main', popup: 'delete-user', modifiers: ['skip']}}>
+        <a>Show one time popup which prompts for user delete</a>
+      </Link>
+      <Link location={{view: 'onboarding', modifiers: ['replace']}}>
+        <a>Replace current location with onboarding</a>
+      </Link>
+      <Link back={true}>
+        <a>Link to previous location (Back button alternative)</a>
+      </Link>
     </div>
+  );
+}
+
+function Root() {
+  // Create navigator
+  const navigator = useMemo(() => new Navigator(), []);
+
+  // Initialize it with extracted from browser settings
+  useEffect(() => {
+    const settings = extractBrowserNavigatorSettings();
+
+    navigator.init(settings || undefined);
+
+    // We could pass any data we need in init. Moreover, we could just
+    // call mount() if extracting initial navigator state is not required
+  }, [navigator]);
+
+  return (
+    <BrowserNavigator navigator={navigator}>
+      <App/>
+    </BrowserNavigator>
   );
 }
 ```

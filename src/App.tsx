@@ -1,6 +1,6 @@
 import React, {useMemo} from 'react';
 
-import {useHistory, useLocation, useNavigator} from './lib/BrowserNavigator';
+import {useHistory, useLocation, useNavigator, Link} from './lib';
 
 import classes from './App.module.css';
 import {createSegue, NavigatorLocationType} from '@mini-apps/navigation';
@@ -71,17 +71,23 @@ export function App() {
         </div>
         <div className={classes['tools-divider']}>or</div>
         <div className={classes.flex}>
+          <Link back={true}>
+            <a className={classes.button}>Back link</a>
+          </Link>
           <a
             href={createSegue({modifiers: ['back']})}
             className={classes.button}
           >
-            Back link
+            Usual back link (browser history will be cut, but navigator&apos;s
+            one will be saved)
           </a>
         </div>
       </div>
       {links.map(([title, location], idx) => (
         <div key={idx}>
-          <a href={createSegue(location)}>{title}</a>
+          <Link location={location}>
+            <a>{title}</a>
+          </Link>
         </div>
       ))}
     </div>
