@@ -90,14 +90,14 @@ function SomeBanner() {
 
 When using this way of defining links, make sure you already created and
 initialized `BrowserNavigator` instance, because otherwise, nothing will
-watch for history updates and a result, not happens.
+watch for history updates and as a result, nothing happens.
 
 Nevertheless, using default `a` tags has a big defect. Clicking these links
 will make browser splice all history items after current history element. So,
 you will lose part of history, **but `BrowserNavigator` will keep working fine
 and correct**.
 
-We recommend more comfortable and stable way of defining links. Look at this:
+We recommend more comfortable and stable way of defining links like this:
 
 ```typescript jsx
 import React from 'react';
@@ -120,6 +120,9 @@ function SomeBanner() {
 It looks much better and has a good benefit. When `back` property  is passed 
 (or `modifiers` includes `back`), `Go back` link will not make browser cut its 
 history. Internally, `navigator.back()` is called.
+
+`Link` component is just passing props `href` and `onClick` (`onClick` is just
+extended, original callback is not lost) to child component
 
 ##### Complete example
 
