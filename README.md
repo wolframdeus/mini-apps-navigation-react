@@ -5,7 +5,7 @@
 
 # Navigation [![NPM][npm-badge]][npm-link]
 
-React wrapper for [@mini-apps/navigation](https://www.npmjs.com/package/@mini-apps/navigation)
+React implementation of [@mini-apps/navigation](https://www.npmjs.com/package/@mini-apps/navigation)
 
 ## Installation
 ```bash

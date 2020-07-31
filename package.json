@@ -6,6 +6,8 @@
   "types": "dist/index.d.ts",
   "repository": "git@github.com:wolframdeus/mini-apps-navigation-react.git",
   "author": "Vladislav Kibenko <wolfram.deus@gmail.com>",
+  "homepage": "https://github.com/wolframdeus/mini-apps-navigation-react",
+  "bugs": "https://github.com/wolframdeus/mini-apps-navigation-react/issues",
   "license": "MIT",
   "keywords": [
     "vk-mini-apps",
