@@ -35,16 +35,16 @@ function createHook<F extends keyof BrowserNavigatorContext>(field: F) {
 }
 
 /**
- * Hook which returns current navigator location
- * @type {() => BrowserNavigatorContext['location']}
+ * Hook which returns current navigator state
+ * @type {() => BrowserNavigatorContext['state']}
  */
-export const useLocation = createHook('location');
+export const useNavigatorState = createHook('state');
 
 /**
  * Hook which returns current navigator history
  * @type {() => BrowserNavigatorContext['history']}
  */
-export const useHistory = createHook('history');
+export const useNavigatorHistory = createHook('history');
 
 /**
  * Hook which returns navigator

@@ -1,7 +1,7 @@
 import {MouseEvent, ReactElement} from 'react';
-import {NavigatorLocationType} from '@mini-apps/navigation';
+import {BrowserNavigatorStateType} from '@mini-apps/navigation';
 
-export interface LinkProps {
+export type LinkProps = {
   /**
    * Child item. Props "href" and "onClick" are passed to it
    */
@@ -9,16 +9,25 @@ export interface LinkProps {
     href?: string;
     onClick?(e: MouseEvent<HTMLElement>): void;
   }>;
-
+} & ({
   /**
    * Should navigator go back when link is clicked. Should not be passed along
-   * with "location" prop
+   * with "state" prop
    */
-  back?: true;
+  back: true;
+} | {
+  /**
+   * Should navigator replace current location with new one
+   */
+  replace?: true;
 
   /**
-   * Navigator next location when link is clicked. Should not be passed along
-   * with "back" prop
+   * Should this state be visited only once
    */
-  location?: NavigatorLocationType;
-}
+  oneTime?: boolean;
+
+  /**
+   * When link is clicked, navigator will push this link
+   */
+  state: BrowserNavigatorStateType;
+})

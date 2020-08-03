@@ -75,7 +75,7 @@
     ]
   },
   "peerDependencies": {
-    "@mini-apps/navigation": "^1.5.2",
+    "@mini-apps/navigation": "^2.0.6",
     "react": "^16.13.1"
   },
   "browserslist": {

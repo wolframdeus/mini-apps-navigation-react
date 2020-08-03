@@ -16,6 +16,10 @@ or
 npm i @mini-apps/navigation-react
 ``` 
 
+## Components
+- [BrowserNavigator](https://github.com/wolframdeus/mini-apps-navigation-react/tree/master/src/lib/BrowserNavigator/README.md)
+- [Link](https://github.com/wolframdeus/mini-apps-navigation-react/tree/master/src/lib/Link/README.md)
+
 ## Usage
 Firstly, you have to create instance of `BrowserNavigator` from 
 `@mini-apps/navigation`:
@@ -39,7 +43,7 @@ import {App} from './App';
 
 import {
   BrowserNavigator as Navigator,
-  extractBrowserNavigatorSettings,
+  extractInitOptions,
 } from '@mini-apps/navigation';
 
 function Root() {
@@ -48,7 +52,7 @@ function Root() {
 
   // Initialize it with extracted from browser settings
   useEffect(() => {
-    const settings = extractBrowserNavigatorSettings();
+    const settings = extractInitOptions();
 
     navigator.init(settings || undefined);
 
@@ -65,18 +69,18 @@ function Root() {
 ```
 
 To make routing work, we could use native browser `a` tags along with
-`createSegue` from `@mini-apps/navigation` which creates appropriate links
+`createLink` from `@mini-apps/navigation` which creates appropriate links
 for navigator with something like this:
 
 ```typescript jsx
 import React from 'react';
-import {createSegue} from '@mini-apps/navigation';
+import {createLink} from '@mini-apps/navigation';
 
 function SomeBanner() {
   return (
     <div>
-      <a href={createSegue({view: 'promo'})}>Go to promo</a>
-      <a href={createSegue({modifiers: ['back']})}>Go back</a>
+      <a href={createLink({view: 'promo'})}>Go to promo</a>
+      <a href={createLink({view: '', modifiers: ['back']})}>Go back</a>
     </div>
   );
 }
@@ -100,8 +104,11 @@ import {Link} from '@mini-apps/navigation-react';
 function SomeBanner() {
   return (
     <div>
-      <Link location={{view: 'promo'}}>
+      <Link state={{view: 'promo'}}>
         <a>Go to promo</a>
+      </Link>
+      <Link state={{view: 'promo-2'}} replace={true}>
+        <a>Replace with another promo</a>
       </Link>
       <Link back={true}>
         <a>Go back</a>
@@ -111,9 +118,9 @@ function SomeBanner() {
 }
 ```
 
-It looks much better and has a good benefit. When `back` property  is passed 
-(or `modifiers` includes `back`), `Go back` link will not make browser cut its 
-history. Internally, `navigator.back()` is called.
+It looks much better and has a good benefit. When `back` property  is passed, 
+`Go back` link will not make browser cut its history. Internally, 
+`navigator.back()` is called.
 
 `Link` component is just passing props `href` and `onClick` (`onClick` is just
 extended, original callback is not lost) to child component
@@ -125,28 +132,28 @@ import React, {useEffect, useMemo} from 'react';
 
 import {
   BrowserNavigator as Navigator,
-  extractBrowserNavigatorSettings,
+  extractInitOptions,
 } from '@mini-apps/navigation';
 import {
   BrowserNavigator,
   Link,
   useHistory, 
-  useLocation, 
+  useNavigatorState, 
   useNavigator,
 } from '@mini-apps/navigation-react';
 
 export function App() {
   const navigator = useNavigator();
-  const location = useLocation();
+  const state = useNavigatorState();
   const history = useHistory();
 
   return (
     <div>
       <p>Current history</p>
       <div>
-        {history.map((loc, idx) => {
-          const stringified = JSON.stringify(loc);
-          let content = loc === location 
+        {history.map((s, idx) => {
+          const stringified = JSON.stringify(s);
+          let content = s === state 
             ? <b>{stringified}</b> 
             : stringified;
 
@@ -155,17 +162,17 @@ export function App() {
       </div>
       <button onClick={() => navigator.back()}>Back</button>
       <button onClick={() => navigator.forward()}>Forward</button>
-      <Link location={{view: 'main'}}>
+      <Link state={{view: 'main'}}>
          <a>Link to main</a>
       </Link>
-      <Link location={{view: 'main', popup: 'delete-user', modifiers: ['skip']}}>
+      <Link state={{view: 'main', popup: 'delete-user'}} oneTime={true}>
         <a>Show one time popup which prompts for user delete</a>
       </Link>
-      <Link location={{view: 'onboarding', modifiers: ['replace']}}>
-        <a>Replace current location with onboarding</a>
+      <Link state={{view: 'onboarding'}} replace={true}>
+        <a>Replace current state with onboarding</a>
       </Link>
       <Link back={true}>
-        <a>Link to previous location (Back button alternative)</a>
+        <a>Link to previous state (Back button alternative)</a>
       </Link>
     </div>
   );
@@ -177,7 +184,7 @@ function Root() {
 
   // Initialize it with extracted from browser settings
   useEffect(() => {
-    const settings = extractBrowserNavigatorSettings();
+    const settings = extractInitOptions();
 
     navigator.init(settings || undefined);
 
@@ -194,20 +201,4 @@ function Root() {
 ```
 
 ## BrowserNavigator
-### HOCs
-Common call signature: `hoc(Component, options?: {displayName?: string})`
 
-| HOC | Property name | Property value |
-|---|---|---|
-|`withNavigatorContext`| `navigation` | Full navigator context |
-|`withNavigator`| `navigator` | Navigator |
-|`withLocation`| `location` | Location |
-|`withHistory`| `history` | History |
-
-### Hooks
-| Hook | Return value |
-|---|---|
-|`useNavigatorContext`| Full navigator context |
-|`useLocation` | Location |
-|`useHistory`| History |
-|`useNavigator`| Navigator|

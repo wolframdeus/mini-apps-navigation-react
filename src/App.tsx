@@ -1,16 +1,25 @@
 import React, {useMemo} from 'react';
 
-import {useHistory, useLocation, useNavigator, Link} from './lib';
+import {
+  useNavigatorState,
+  useNavigatorHistory,
+  useNavigator,
+  Link,
+} from './lib';
 
 import classes from './App.module.css';
-import {createSegue, NavigatorLocationType} from '@mini-apps/navigation';
+import {
+  createLink,
+  NavigatorState,
+  NavigatorSimplifiedState,
+} from '@mini-apps/navigation';
 
 export function App() {
   const navigator = useNavigator();
-  const location = useLocation();
-  const history = useHistory();
+  const state = useNavigatorState();
+  const history = useNavigatorHistory();
 
-  const links = useMemo<[string, NavigatorLocationType][]>(() => [
+  const links = useMemo<[string, NavigatorState | NavigatorSimplifiedState][]>(() => [
     ['onboarding', {view: 'onboarding'}],
     ['friends', {view: 'friends'}],
     ['friends / Vlad', {
@@ -30,26 +39,25 @@ export function App() {
       modifiers: ['skip'],
       params: {name: 'Vlad'},
     }],
-    ['Replace link (onboarding) ', {view: 'onboarding'}],
   ], []);
 
   return (
     <div>
       <p className={classes.title}>Current history</p>
       <div className={classes.history}>
-        {history.map((loc, idx) => {
+        {history.map((s, idx) => {
           let className = classes.location;
 
-          if (loc === location) {
+          if (s === state) {
             className += ' ' + classes['location--current'];
           }
-          if (loc.modifiers.includes('skip')) {
+          if (s.modifiers.includes('skip')) {
             className += ' ' + classes['location--skipped'];
           }
 
           return (
             <div className={className} key={idx}>
-              {JSON.stringify(loc)}
+              {JSON.stringify(s)}
             </div>
           );
         })}
@@ -75,7 +83,7 @@ export function App() {
             <a className={classes.button}>Back link</a>
           </Link>
           <a
-            href={createSegue({modifiers: ['back']})}
+            href={createLink({view: '', modifiers: ['back']})}
             className={classes.button}
           >
             Usual back link (browser history will be cut, but navigator&apos;s
@@ -83,13 +91,18 @@ export function App() {
           </a>
         </div>
       </div>
-      {links.map(([title, location], idx) => (
+      {links.map(([title, state], idx) => (
         <div key={idx}>
-          <Link location={location}>
+          <Link state={state}>
             <a>{title}</a>
           </Link>
         </div>
       ))}
+      <div>
+        <Link state={{view: 'onboarding'}} replace={true}>
+          <a>Replace link (onboarding)</a>
+        </Link>
+      </div>
     </div>
   );
 }

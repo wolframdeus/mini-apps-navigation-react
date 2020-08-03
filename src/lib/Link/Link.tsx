@@ -5,7 +5,7 @@ import {
   useCallback,
 } from 'react';
 
-import {createSegue} from '@mini-apps/navigation';
+import {createLink, fulfillState, REPLACE_MOD} from '@mini-apps/navigation';
 import {useNavigator} from '../BrowserNavigator';
 
 import {LinkProps} from './types';
@@ -16,47 +16,39 @@ import {LinkProps} from './types';
  * @type {React.NamedExoticComponent<LinkProps>}
  */
 export const Link = memo(function Link(props: LinkProps) {
-  const {children, back, location} = props;
+  const {children} = props;
   const navigator = useNavigator();
-
-  if (typeof back !== 'undefined' && location) {
-    throw new Error(
-      '"back" and "location" properties were passed together. This is ' +
-      'forbidden behaviour.',
-    );
-  }
 
   const onClick = useCallback((e: MouseEvent<HTMLElement>) => {
     // Prevent default browser behaviour
     e.preventDefault();
 
-    // Push new location to navigator
-    if (back || location?.modifiers?.includes('back')) {
+    // Push new state to navigator
+    if ('back' in props) {
       navigator.back();
-    } else if (location) {
-      navigator.pushLocation(location);
+    } else if ('replace' in props) {
+      navigator.replaceState(props.state, {oneTime: props.oneTime});
+    } else {
+      navigator.pushState(props.state, {oneTime: props.oneTime});
     }
 
     // Call previously bound callback
     if (children.props.onClick) {
       children.props.onClick(e);
     }
-    // eslint-disable-next-line
-  }, [navigator, back, location, children.props.onClick]);
+  }, [props, children.props, navigator]);
 
-  if (back || location?.modifiers?.includes('back')) {
+  if ('back' in props) {
     return cloneElement(children, {
-      href: createSegue({modifiers: ['back']}),
+      href: createLink(fulfillState({view: '', modifiers: ['back']})),
       onClick,
     });
   }
 
-  if (!location) {
-    throw new Error(
-      'Unable to create segue. "back" or "location" properties should be ' +
-      'passed.',
-    );
-  }
+  const modifiers = 'replace' in props ? [REPLACE_MOD] : [];
 
-  return cloneElement(children, {href: createSegue(location), onClick});
+  return cloneElement(children, {
+    href: createLink(fulfillState({...props.state, modifiers})),
+    onClick,
+  });
 });

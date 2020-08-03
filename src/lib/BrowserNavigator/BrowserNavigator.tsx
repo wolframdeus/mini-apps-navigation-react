@@ -1,8 +1,8 @@
 import React, {
-  memo, Reducer,
+  memo,
   useEffect,
   useMemo,
-  useReducer,
+  useState,
 } from 'react';
 
 import {browserNavigatorContext} from './context';
@@ -10,60 +10,37 @@ import {browserNavigatorContext} from './context';
 import {
   BrowserNavigatorContext,
   BrowserNavigatorProps,
-  BrowserNavigatorState, BrowserNavigatorStateAction,
 } from './types';
 import {StateChangedEventParam} from '@mini-apps/navigation';
 
 const {Provider} = browserNavigatorContext;
 
-const reducer: Reducer<BrowserNavigatorState, BrowserNavigatorStateAction> = (
-  state,
-  action,
-) => {
-  if (action.type === 'state') {
-    return action.payload;
-  }
-  if (action.type === 'location') {
-    return {...state, location: action.payload};
-  }
-  return {...state, history: action.payload};
-};
-
 export const BrowserNavigator = memo<BrowserNavigatorProps>(
   function BrowserNavigator(props) {
     const {navigator, children} = props;
 
-    const [state, dispatch] = useReducer(reducer, {
-      location: navigator.location,
+    const [navOptions, setNavOptions] = useState(() => ({
+      state: navigator.state,
       history: navigator.history,
-    });
+    }));
 
     const context = useMemo<BrowserNavigatorContext>(() => ({
-      ...state,
+      ...navOptions,
       navigator,
-    }), [state, navigator]);
+    }), [navOptions, navigator]);
 
-    // Update location and history in state when it changed in navigator
+    // Update state and history in state when it changed in navigator
     useEffect(() => {
-      const listener = ({stack, location}: StateChangedEventParam) => {
-        if (location && stack) {
-          dispatch({
-            type: 'state',
-            payload: {
-              history: stack.currentStack,
-              location: location.currentLocation,
-            },
-          });
-        } else if (location) {
-          dispatch({type: 'location', payload: location.currentLocation});
-        } else if (stack) {
-          dispatch({type: 'history', payload: [...stack.currentStack]});
-        }
+      const listener = ({history, state}: StateChangedEventParam) => {
+        setNavOptions(navOptions => ({
+          state: state?.current || navOptions.state,
+          history: history ? [...history.current] : navOptions.history,
+        }));
       };
 
-      navigator.on('state-changed', listener);
+      navigator.on('change', listener);
 
-      return () => navigator.off('state-changed', listener);
+      return () => navigator.off('change', listener);
     }, [navigator]);
 
     return <Provider value={context}>{children}</Provider>;

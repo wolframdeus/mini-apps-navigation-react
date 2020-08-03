@@ -5,7 +5,7 @@ import {App} from './App';
 
 import {
   BrowserNavigator as Navigator,
-  extractBrowserNavigatorSettings,
+  extractInitOptions,
 } from '@mini-apps/navigation';
 
 export function Root() {
@@ -14,7 +14,7 @@ export function Root() {
 
   // Initialize it with extracted from browser settings
   useEffect(() => {
-    const settings = extractBrowserNavigatorSettings();
+    const settings = extractInitOptions();
 
     navigator.init(settings || undefined);
 

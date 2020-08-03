@@ -1,24 +1,5 @@
-import {
-  BrowserNavigator,
-  NavigatorCompleteLocationType,
-} from '@mini-apps/navigation';
+import {BrowserNavigator, IBrowserNavigator} from '@mini-apps/navigation';
 import {ReactNode, ReactNodeArray} from 'react';
-
-export interface BrowserNavigatorState {
-  location: NavigatorCompleteLocationType;
-  history: NavigatorCompleteLocationType[];
-}
-
-export type BrowserNavigatorStateAction = {
-  type: 'location';
-  payload: NavigatorCompleteLocationType;
-} | {
-  type: 'history';
-  payload: NavigatorCompleteLocationType[];
-} | {
-  type: 'state';
-  payload: BrowserNavigatorState;
-};
 
 export interface BrowserNavigatorProps {
   /**
@@ -33,9 +14,6 @@ export interface BrowserNavigatorProps {
 }
 
 export interface BrowserNavigatorContext
-  extends Pick<BrowserNavigator, 'location' | 'history'> {
-  /**
-   * Navigator instance itself
-   */
-  navigator: BrowserNavigator;
+  extends Pick<IBrowserNavigator, 'state' | 'history'> {
+  navigator: IBrowserNavigator;
 }
